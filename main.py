@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from collections import Counter
+from collections import defaultdict
 
 nlp = spacy.load('en_core_web_lg')
 
@@ -17,7 +18,7 @@ driver = webdriver.Chrome('chromedriver.exe', options=options)
 action = ActionChains(driver)
 wait = WebDriverWait(driver, 600)
 
-driver.get("https://codenames.game/room/rose-popcorn-sweat")
+driver.get("https://codenames.game/room/temple-field-yellowstone")
 
 input_box = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@id="nickname-input"]')))
 input_box.send_keys('Anya')
@@ -30,24 +31,26 @@ onetime = True
 
 def guess(x, y, z):
     print(x, y, z)
-    clues = '-'.join(z.split(' ')[:-1])
+    clues = ' '.join(z.split(' ')[:-1])
     no = z.split(' ')[-1]
     for i in y:
         try:
             del x[i]
         except KeyError:
             pass
-    temp = {}
+    temp = defaultdict(int)
     for word in x.keys():
         tokens = nlp(clues + ' ' + word)
-        token1, token2 = tokens[0], tokens[1]
-        temp[word] = token1.similarity(token2)
-        print(clues, ' and ', word, ' = ', token1.similarity(token2))
+        print(tokens)
+        LastToken = tokens[-1]
+        for token in tokens[:-1]:
+            temp[word] += token.similarity(LastToken)
+    print(temp)
     k = Counter(temp)
     if no == '∞':
-        high = k.most_common(len(x.keys()/2))
+        high = k.most_common(len(x.keys())//2)
     else:
-        high = k.most_common(int(no))
+        high = k.most_common(int(no)*2)
     print(high)
     return [ans[0] for ans in high]
 
