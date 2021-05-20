@@ -66,9 +66,16 @@ while True:
                 dictionary[i.text] = i
             once = False
         time.sleep(2)
-        exc = driver.find_elements_by_tag_name('em')
-        exclude = [i.text for i in exc if ' ' not in i.text]
-        clue = exc[-1].text
+        try:
+            exc = driver.find_elements_by_tag_name('em')
+            exclude = [i.text for i in exc if ' ' not in i.text]            
+            clue = exc[-1].text
+        except:
+            dictionary = {}
+            exclude = []
+            once = True
+            onetime = True
+            continue
         if onetime:
             for res in guess(dictionary, exclude, clue):
                 print(res)
