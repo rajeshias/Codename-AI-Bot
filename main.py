@@ -10,14 +10,14 @@ from collections import Counter
 nlp = spacy.load('en_core_web_lg')
 
 options = webdriver.ChromeOptions()
-# options.add_argument('--headless')
+options.add_argument('--headless')
 options.add_argument("--start-maximized")
 driver = webdriver.Chrome('chromedriver.exe', options=options)
 
 action = ActionChains(driver)
 wait = WebDriverWait(driver, 600)
 
-driver.get("https://codenames.game/room/popcorn-cable-bowl")
+driver.get("https://codenames.game/room/rose-popcorn-sweat")
 
 input_box = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@id="nickname-input"]')))
 input_box.send_keys('Anya')
@@ -42,8 +42,10 @@ def guess(x, y, z):
         tokens = nlp(clues + ' ' + word)
         token1, token2 = tokens[0], tokens[1]
         temp[word] = token1.similarity(token2)
+        print(clues, ' and ', word, ' = ', token1.similarity(token2))
     k = Counter(temp)
     high = k.most_common(int(no))
+    print(high)
     return [ans[0] for ans in high]
 
 
@@ -64,8 +66,11 @@ while True:
         if onetime:
             for res in guess(dictionary, exclude, clue):
                 print(res)
-                time.sleep(1)
-                dictionary[res].click()
+                time.sleep(1.5)
+                try:
+                    dictionary[res].click()
+                except:
+                    pass
             onetime = False
     else:
         time.sleep(2)
