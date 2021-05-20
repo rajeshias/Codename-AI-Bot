@@ -44,7 +44,10 @@ def guess(x, y, z):
         temp[word] = token1.similarity(token2)
         print(clues, ' and ', word, ' = ', token1.similarity(token2))
     k = Counter(temp)
-    high = k.most_common(int(no))
+    if no == '∞':
+        high = k.most_common(len(x.keys()/2))
+    else:
+        high = k.most_common(int(no))
     print(high)
     return [ans[0] for ans in high]
 
